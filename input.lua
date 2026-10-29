@@ -9,18 +9,38 @@ function Input:new()
     obj.moveRight = false
     obj.moveForward = false
     obj.moveBackward = false
+    --controlla
+    obj.axisX = 0.0
+    obj.axisY = 0.0
 
     return obj
 end
 
 function Input:ParseAction(action)
     local actionName = Game.NameToString(action:GetName())
-    local actionType = action:GetType(action).value
+
+    if actionName == "MoveX" or actionName == "MoveY" then
+        local ok, value = pcall(function() return action:GetValue() end)
+        if not ok or type(value) ~= "number" then
+            return
+        end
+        if actionName == "MoveX" then
+            self.axisX = value
+        else
+            self.axisY = value
+        end
+        return
+    end
+
+    local ok, actionType = pcall(function() return action:GetType(action).value end)
+    if not ok then
+        ok, actionType = pcall(function() return action:GetType().value end)
+        if not ok then
+            return
+        end
+    end
     local pressed = actionType == "BUTTON_PRESSED"
     local released = actionType == "BUTTON_RELEASED"
-
-    self.horizontalAxis = 0.0
-    self.verticalAxis = 0.0
 
     if actionName == "Left" then
         if pressed then
@@ -67,6 +87,11 @@ function Input:GetInputVector()
 
     if self.moveRight then
         x = x + 1.0
+    end
+
+    if x == 0.0 and y == 0.0 then
+        x = self.axisX
+        y = self.axisY
     end
 
     return Vector4.new(x, y, 0.0, 0.0)
