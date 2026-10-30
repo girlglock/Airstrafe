@@ -1,0 +1,26 @@
+name: release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: bundle bin into zip
+        run: zip -r CyberpunkAirstrafe.zip bin
+
+      - name: make release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete latest --cleanup-tag --yes || true
+          gh release create latest CyberpunkAirstrafe.zip \
+            --title "CyberpunkAirstrafe" \
+            --target "$GITHUB_SHA" \
+            --notes ""

@@ -9,3 +9,7 @@ what i changed:
 - added autohop
 - added velo hud
 - reworked air move
+- added shotgun "rocket" jumping
+- unlocked vanilla speedcap
+- mod toggle
+- toggle for stumble when landing from higher up
